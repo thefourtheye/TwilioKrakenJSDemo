@@ -17,16 +17,18 @@ app.requestStart = function requestStart(server) {
     var db = new sqlite3.Database('Database.sqlite3');
 
     db.serialize(function() {
+        // db.run("DROP TABLE IF EXISTS lorem");
         // db.run("CREATE TABLE lorem (info TEXT)");
+        db.run("CREATE TABLE IF NOT EXISTS lorem (info TEXT)");
 
-        // var stmt = db.prepare("INSERT INTO lorem VALUES (?)");
-        // for (var i = 0; i < 10; i++) {
-        //     stmt.run("Ipsum " + i);
-        // }
-        // stmt.finalize();
+        var stmt = db.prepare("INSERT INTO lorem VALUES (?)");
+        for (var i = 0; i < 3; i++) {
+            stmt.run("Ipsum " + i);
+        }
+        stmt.finalize();
 
-        db.each("SELECT rowid AS id, info FROM lorem", function(err, row) {
-            console.log(row.id + ": " + row.info);
+        db.all("SELECT rowid AS id, info FROM lorem", function(err, rows) {
+            console.log(rows);
         });
     });
 
