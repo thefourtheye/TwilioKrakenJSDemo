@@ -2,7 +2,8 @@
 
 
 var kraken = require('kraken-js'),
-    app = {};
+    app = {},
+    db = require("sqlite3");
 
 
 app.configure = function configure(nconf, next) {
