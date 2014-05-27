@@ -30,7 +30,8 @@
      }
  },
  "database": {
-     "name": "sqlite"
+     "name": "sqlite",
+     "fileName": "Database.sqlite3"
  }
 // "express": {
 //     "x-powered-by": false,

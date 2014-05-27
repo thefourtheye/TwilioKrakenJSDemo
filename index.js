@@ -2,37 +2,27 @@
 
 var kraken = require('kraken-js'),
     app = {},
-    db = require("./lib/db/DBManager.js");
+    dbManager = require("./lib/db/dbmanager.js"),
+    db;
 
 
 app.configure = function configure(nconf, next) {
     // Async method run on startup.
-    db.initialize(nconf.get("database"));
+    dbManager.initialize(nconf.get("database"));
+    db = dbManager.getDBObject();
+    process.on('exit', db.cleanup.bind(db));
     next(null);
 };
 
 
 app.requestStart = function requestStart(server) {
-    // var sqlite3 = require('sqlite3').verbose();
-    // var db = new sqlite3.Database('Database.sqlite3');
-
-    // db.serialize(function() {
-    //     // db.run("DROP TABLE IF EXISTS lorem");
-    //     // db.run("CREATE TABLE lorem (info TEXT)");
-    //     db.run("CREATE TABLE IF NOT EXISTS lorem (info TEXT)");
-
-    //     var stmt = db.prepare("INSERT INTO lorem VALUES (?)");
-    //     for (var i = 0; i < 3; i++) {
-    //         stmt.run("Ipsum " + i);
-    //     }
-    //     stmt.finalize();
-
-    //     db.all("SELECT rowid AS id, info FROM lorem", function(err, rows) {
-    //         console.log(rows);
-    //     });
+    // db.insert("", "Contacts", {"Name": "Welcome", "CountryCode":91, "Number": "9994602428"});
+    // db.insert("", "Contacts", "*", ["Chumma1", 92, "9994602421"]);
+    // db.fetch("", "Contacts", "*", {"Name": "Welcome"}, function(err, rows) {
+    //     console.log(rows);
     // });
-
-    // db.close();
+    // db.delete("", "Contacts", {"Namer": "B"});
+    // db.update("", "Contacts", {"Name":"B"}, {"CountryCode":92});
 };
 
 
@@ -53,6 +43,5 @@ if (require.main === module) {
         }
     });
 }
-
 
 module.exports = app;
