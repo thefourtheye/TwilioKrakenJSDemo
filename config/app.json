@@ -3,16 +3,16 @@
 //
 // "port": 8000,
 //
-// "i18n": {
-//     "fallback": "en-US",
-//     "contentPath": "path:./locales"
-// },
+ "i18n": {
+     "fallback": "en-US",
+     "contentPath": "path:./locales"
+ },
 //
 // "routes": {
 //     "routePath": "path:./controllers"
 // },
 //
-//  "view engines": {
+  "view engines": {
 //      "js": {
 //         "module": "adaro",
 //         "settings": {
@@ -21,14 +21,17 @@
 //         }
 //      },
 //
-//     "dust": {
-//         "module": "adaro",
-//         "settings": {
-//             "helpers": null,
-//             "stream": false
-//         }
-//     }
-// },
+     "dust": {
+         "module": "adaro",
+         "settings": {
+             "helpers": null,
+             "stream": false
+         }
+     }
+ },
+ "database": {
+     "name": "sqlite"
+ }
 // "express": {
 //     "x-powered-by": false,
 //     "trust proxy": false,
