@@ -16,13 +16,7 @@ app.configure = function configure(nconf, next) {
 
 
 app.requestStart = function requestStart(server) {
-    // db.insert("", "Contacts", {"Name": "Welcome", "CountryCode":91, "Number": "9994602428"});
-    // db.insert("", "Contacts", "*", ["Chumma1", 92, "9994602421"]);
-    // db.fetch("", "Contacts", "*", {"Name": "Welcome"}, function(err, rows) {
-    //     console.log(rows);
-    // });
-    // db.delete("", "Contacts", {"Namer": "B"});
-    // db.update("", "Contacts", {"Name":"B"}, {"CountryCode":92});
+
 };
 
 
