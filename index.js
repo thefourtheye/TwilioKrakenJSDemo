@@ -1,20 +1,29 @@
 'use strict';
 
 var kraken = require('kraken-js'),
-    app = {},
+    lusca = require('lusca'),
     dbManager = require("./lib/db/dbmanager.js"),
-    db;
+    app = {},
+    db, conf;
 
 app.configure = function configure(nconf, next) {
     // Async method run on startup.
     dbManager.initialize(nconf.get("database"));
     db = dbManager.getDBObject();
     process.on('exit', db.cleanup.bind(db));
+    conf = nconf;
     next(null);
 };
 
 app.requestStart = function requestStart(server) {
-
+    server.use(require('cookie-parser')());
+    console.log(conf.get("SessionSecret"));
+    server.use(require('express-session')({
+        "secret": conf.get("SessionSecret")
+    }));
+    server.use(lusca.csrf());
+    server.use(lusca.xframe('SAMEORIGIN'));
+    server.use(lusca.xssProtection(true));
 };
 
 app.requestBeforeRoute = function requestBeforeRoute(server) {
