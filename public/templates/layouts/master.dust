@@ -1,14 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title>{+title /}</title>
-    <link rel="stylesheet" href="css/app.css" />
-</head>
-<body>
-<div id="wrapper">
-    {+body /}
-</div>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <link rel="shortcut icon" href="assets/ico/favicon.ico"/>
 
+    <title>{+title /}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom styles for this template -->
+    <link href="css/jumbotron-narrow.css" rel="stylesheet"/>
+
+    <link href='http://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'/>
+
+    <script src="js/jquery-2.1.1.js"></script>
+    <script src="select2-3.4.8/select2.js"></script>
+    <link href="select2-3.4.8/select2.css" rel="stylesheet"/>
+
+    <style type="text/css">
+        a {
+            font-size: 18px;
+            font-family:"PT Serif";
+        }
+        .ptserif {
+            font-family:"PT Serif";
+        }
+        .mainbox {
+            background-color: #f9f9f9;
+            display: block;
+            -webkit-margin-before: 1em;
+            -webkit-margin-after: 1em;
+            -webkit-margin-start: 0px;
+            -webkit-margin-end: 0px;
+            margin-top: 10px;
+            margin-right: 0px;
+            margin-bottom: 10px;
+            margin-left: 0px;
+            border-radius: 12px;
+            padding-top: 14px;
+            padding-right: 24px;
+            padding-bottom: 14px;
+            padding-left: 24px;
+            width: 60%;
+            height: 400px;
+        }
+    </style>
+</head>
+
+<body class="ptserif">
+    <div class="container">
+        <div class="header" style="text-align: center">
+            <h1 class="text ptserif"><b></b></h1>
+        </div>
+
+        <center>
+            <div id="wrapper" class="ptserif mainbox">{+body /}</div>
+        </center>
+        <br/>
+        <div class="footer"/>
+    </div>
 </body>
 </html>

@@ -1,5 +1,140 @@
 {>"layouts/master" /}
 
 {<body}
-    <h1>{@pre type="content" key="greeting"/}</h1>
+    <style>
+        .numberbox {
+            font-size: 33px;
+            width: 100%;
+            letter-spacing: 3px;
+            direction: RTL;
+            padding-right: 10px;
+        }
+    </style>
+    <script type="text/javascript">
+        function formatResult(currentObject) {
+            return "<div id='id" + currentObject.ID + "'>" +
+                (currentObject.Name ? "<h4>" + currentObject.Name + "</h4>" : "") +
+                currentObject.Number + "</div>";
+        }
+
+        function formatSelection(currentObject) {
+            return "<div id='id" + currentObject.ID + "'>" +
+                (currentObject.Number? "<b>" + currentObject.Number + "</b> - " : "") +
+                currentObject.Name + "</div>";
+        }
+
+        $(document).ready(function() {
+            var cache = {};
+            $("#callKey").select2({
+                id: function(currentObject){ return currentObject.ID; },
+                formatResult: formatResult,
+                formatSelection: formatSelection,
+                beforeSend: function () {
+                    if (cache.hasOwnProperty(url)) {
+                        doSomething(localCache.get(url));
+                        return false;
+                    }
+                    return true;
+                },
+                query: function (query) {
+                    if (cache.hasOwnProperty(query.term)) {
+                        return query.callback(cache[query.term]);
+                    }
+                    $.ajax("/search", {
+                        "type": "POST",
+                        "data": {
+                            "_csrf": $("#_csrf").val(),
+                            "key": query.term,
+                        },
+                        "error": function() {
+                            alert("Searching failed!");
+                        }
+                    }).done(function(data) {
+                        if (data.results.length === 0) {
+                            data.results.push({ID:0, Name:query.term, Number:""});
+                        }
+                        console.log(query.term);
+                        cache[query.term] = data;
+                        query.callback(data);
+                    });
+                }
+            });
+        });
+    </script>
+
+    <form method="post">
+        <input type="hidden" name="_csrf" id="_csrf" value="{_csrf}" />
+        <div class="control-group">
+            <div class="controls">
+                <input id="callKey" name="callKey" class="input-xxlarge" type="hidden" style="width:100%"
+                    class="ptserif" required />
+            </div>
+        </div>
+    </form>
+
+    <!-- <table class="table">
+        <tr>
+            <td colspan="3" style="border-top-color: transparent;">
+                <input class="numberbox" id="numbox" name="numbox" disabled="disabled"/>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top-color: transparent">
+            </td>
+        </tr>
+        <tr>
+            <td width="33%" style="border-top-color: transparent">
+                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
+                    onclick="numberPressed('1');">1</button>
+            </td>
+            <td width="33%" style="border-top-color: transparent">
+                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
+                    onclick="numberPressed('2');">2</button>
+            </td>
+            <td width="33%" style="border-top-color: transparent">
+                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
+                    onclick="numberPressed('3');">3</button>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top-color: transparent">
+                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
+                    onclick="numberPressed('4');">4</button>
+            </td>
+            <td style="border-top-color: transparent">
+                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
+                    onclick="numberPressed('5');">5</button>
+            </td style="border-top-color: transparent">
+            <td style="border-top-color: transparent">
+                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
+                    onclick="numberPressed('6');">6</button>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top-color: transparent">
+                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
+                    onclick="numberPressed('7');">7</button>
+            </td>
+            <td style="border-top-color: transparent">
+                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
+                    onclick="numberPressed('8');">8</button>
+            </td>
+            <td style="border-top-color: transparent">
+                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
+                    onclick="numberPressed('9');">9</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button type="button" class="btn btn-lg btn-primary" style="width: 100%">Clear</button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
+                    onclick="numberPressed('0');">0</button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-lg btn-success" style="width: 100%">Call</button>
+            </td>
+        </tr>
+    </table>-->
 {/body}

@@ -17,17 +17,17 @@ app.configure = function configure(nconf, next) {
 
 app.requestStart = function requestStart(server) {
     server.use(require('cookie-parser')());
-    console.log(conf.get("SessionSecret"));
+    server.use(require('body-parser')());
+};
+
+app.requestBeforeRoute = function requestBeforeRoute(server) {
+    // Run before any routes have been added.
     server.use(require('express-session')({
         "secret": conf.get("SessionSecret")
     }));
     server.use(lusca.csrf());
     server.use(lusca.xframe('SAMEORIGIN'));
     server.use(lusca.xssProtection(true));
-};
-
-app.requestBeforeRoute = function requestBeforeRoute(server) {
-    // Run before any routes have been added.
 };
 
 app.requestAfterRoute = function requestAfterRoute(server) {
