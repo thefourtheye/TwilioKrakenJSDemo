@@ -9,7 +9,6 @@ var _ = require("lodash"),
 
 module.exports = function(app) {
     app.post('/call', function(req, res) {
-        console.log(req.body, accountSid, authToken);
         var client = require('twilio')(accountSid, authToken);
         client.calls.create({
             to: req.body.number,
@@ -24,7 +23,8 @@ module.exports = function(app) {
     });
 
     app.get('/acceptedCall', function(req, res) {
-        resset('Content-Type', 'text/xml');
+        console.log(req.body);
+        res.set('Content-Type', 'text/xml');
         res.send('<?xml version="1.0" encoding="UTF-8" ?><Response>' +
             "<Say>Hello from twilio-krakenjs-demo application</Say></Response>");
     });
