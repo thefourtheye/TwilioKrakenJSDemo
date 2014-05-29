@@ -1,67 +1,6 @@
 {>"layouts/master" /}
 
-{<body}
-    <style>
-        .numberbox {
-            font-size: 33px;
-            width: 100%;
-            letter-spacing: 3px;
-            direction: RTL;
-            padding-right: 10px;
-        }
-    </style>
-    <script type="text/javascript">
-        function formatResult(currentObject) {
-            return "<div id='id" + currentObject.ID + "'>" +
-                (currentObject.Name ? "<h4>" + currentObject.Name + "</h4>" : "") +
-                currentObject.Number + "</div>";
-        }
-
-        function formatSelection(currentObject) {
-            return "<div id='id" + currentObject.ID + "'>" +
-                (currentObject.Number? "<b>" + currentObject.Number + "</b> - " : "") +
-                currentObject.Name + "</div>";
-        }
-
-        $(document).ready(function() {
-            var cache = {};
-            $("#callKey").select2({
-                id: function(currentObject){ return currentObject.ID; },
-                formatResult: formatResult,
-                formatSelection: formatSelection,
-                beforeSend: function () {
-                    if (cache.hasOwnProperty(url)) {
-                        doSomething(localCache.get(url));
-                        return false;
-                    }
-                    return true;
-                },
-                query: function (query) {
-                    if (cache.hasOwnProperty(query.term)) {
-                        return query.callback(cache[query.term]);
-                    }
-                    $.ajax("/search", {
-                        "type": "POST",
-                        "data": {
-                            "_csrf": $("#_csrf").val(),
-                            "key": query.term,
-                        },
-                        "error": function() {
-                            alert("Searching failed!");
-                        }
-                    }).done(function(data) {
-                        if (data.results.length === 0) {
-                            data.results.push({ID:0, Name:query.term, Number:""});
-                        }
-                        console.log(query.term);
-                        cache[query.term] = data;
-                        query.callback(data);
-                    });
-                }
-            });
-        });
-    </script>
-
+{<dialerBody}
     <form method="post">
         <input type="hidden" name="_csrf" id="_csrf" value="{_csrf}" />
         <div class="control-group">
@@ -137,4 +76,4 @@
             </td>
         </tr>
     </table>-->
-{/body}
+{/dialerBody}

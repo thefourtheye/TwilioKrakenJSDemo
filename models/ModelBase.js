@@ -8,8 +8,8 @@ function Model(database, table) {
     this.__table = table;
 }
 
-Model.prototype.select = function(columns, exact, callBack) {
-    db.fetch(this.__database, this.__table, columns, this.__data, exact, callBack);
+Model.prototype.select = function(columns, exact, sort, callBack) {
+    db.fetch(this.__database, this.__table, columns, this.__data, exact, sort, callBack);
 };
 
 Model.prototype.insert = function() {

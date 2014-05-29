@@ -2,8 +2,8 @@ var modelBase = require("./ModelBase"),
     util = require("util");
 
 function CallLog(obj) {
-    modelBase.call(obj, "", "CallLog");
-    return obj;
+    modelBase.call(this, "", "CallLogs");
+    this.__data = obj;
 }
 
 util.inherits(CallLog, modelBase);

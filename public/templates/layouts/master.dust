@@ -19,6 +19,7 @@
     <link href='http://fonts.googleapis.com/css?family=PT+Serif' rel='stylesheet' type='text/css'/>
 
     <script src="js/jquery-2.1.1.js"></script>
+    <script src="js/bootstrap.js"></script>
     <script src="select2-3.4.8/select2.js"></script>
     <link href="select2-3.4.8/select2.css" rel="stylesheet"/>
 
@@ -50,6 +51,87 @@
             height: 400px;
         }
     </style>
+    <script>
+        function LocalCache() {
+            var cache = {};
+            return {
+                "clearCache": function (tableName) {
+                    if (Object.prototype.toString.call(tableName).indexOf("String") + 1 && tableName) {
+                        cache[tableName.toLowerCase()] = {};
+                    }
+                },
+                "reloadCache": function (tableName) {
+                    if (Object.prototype.toString.call(tableName).indexOf("String") + 1 && tableName) {
+                        $.ajax("/loadtables", {
+                            "type": "POST",
+                            "data": {
+                                "_csrf": $("#_csrf").val(),
+                                "tablename": tableName
+                            },
+                            "error": function() {
+                                alert("Loading " + tableName + " failed!");
+                            }
+                        }).done(function(data) {
+                            cache[tableName.toLowerCase()] = data;
+                        });
+                    }
+                },
+                "get": function(tableName) {
+                    return cache[tableName.toLowerCase()];
+                }
+            }
+        }
+
+        var Cache = new LocalCache();
+
+        $(document).ready(function() {
+            alert("Ready!!!");
+            Cache.reloadCache("Contacts");
+            Cache.reloadCache("SpeedDial");
+            Cache.reloadCache("CallLogs");
+
+            $("#callKey").select2({
+                id: function(currentObject) {
+                    return currentObject.ID;
+                },
+                formatResult: function formatResult(currentObject) {
+                    return "<div id='id" + currentObject.ID + "'>" +
+                        (currentObject.Name ? "<h4>" + currentObject.Name + "</h4>" : "") +
+                        currentObject.Number + "</div>";
+                },
+                formatSelection: function formatSelection(currentObject) {
+                    return "<div id='id" + currentObject.ID + "'>" +
+                        (currentObject.Number? "<b>" + currentObject.Number + "</b> - " : "") +
+                        currentObject.Name + "</div>";
+                },
+                query: function(query) {
+                    var term = query.term.toLowerCase();
+                    query.callback({
+                        "results": (function() {
+                            var temp = (Cache.get("Contacts") || []).filter(function(currentObject) {
+                                return currentObject.Name.toLowerCase().indexOf(term) + 1 ||
+                                    currentObject.Number.toLowerCase().indexOf(term) + 1;
+                            });
+                            if (!temp.length) {
+                                temp.push({
+                                    ID: 0,
+                                    Name: query.term,
+                                    Number: ""
+                                });
+                            }
+                            return temp;
+                        })()
+                    });
+                }
+            });
+
+            $('#myTabs a').click(function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+            });
+
+        });
+    </script>
 </head>
 
 <body class="ptserif">
@@ -59,7 +141,26 @@
         </div>
 
         <center>
-            <div id="wrapper" class="ptserif mainbox">{+body /}</div>
+            <ul id="myTabs" class="nav nav-tabs">
+                <li class="active"><a href="#dialer" data-toggle="tab">Dialer</a></li>
+                <li><a href="#" data-toggle="tab">Contacts</a></li>
+                <li><a href="#" data-toggle="tab">Speed Dial</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div id="dialer" class="ptserif mainbox tab-pane fade in active">
+                    {+dialerBody /}
+                </div>
+
+                <div id="contacts" class="ptserif mainbox tab-pane fade">
+                    {+dialerBody /}
+                </div>
+
+                <div id="speeddial" class="ptserif mainbox tab-pane fade">
+                    {+dialerBody /}
+                </div>
+            </div>
+
         </center>
         <br/>
         <div class="footer"/>
