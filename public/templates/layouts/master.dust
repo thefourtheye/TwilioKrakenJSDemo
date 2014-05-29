@@ -8,7 +8,7 @@
     <meta name="author" content=""/>
     <link rel="shortcut icon" href="assets/ico/favicon.ico"/>
 
-    <title>{+title /}</title>
+    <title>Twilio KrakenJS Demo Application</title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet"/>
@@ -105,7 +105,7 @@
                                 return currentObject.Name.toLowerCase().indexOf(term) + 1 ||
                                     currentObject.Number.toLowerCase().indexOf(term) + 1;
                             });
-                            if (!temp.length) {
+                            if (!temp.length && term) {
                                 temp.push({
                                     ID: "Custom" + term,
                                     Name: term,
@@ -170,7 +170,7 @@
 <body class="ptserif">
     <div class="container">
         <div class="header" style="text-align: center">
-            <h1 class="text ptserif"><b></b></h1>
+            <h1 class="text ptserif"><b>Twilio KrakenJS Demo Application</b></h1>
         </div>
 
         <center>

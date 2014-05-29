@@ -11,7 +11,7 @@
                 }
                 if (ID.match(/^\d+$/)) {
                     ID = parseInt(ID, 10);
-                    $.ajax("/makecall", {
+                    $.ajax("/call", {
                         "type": "POST",
                         "data": {
                             "_csrf": $("#_csrf").val(),
@@ -217,16 +217,16 @@
                     <div class="modal-body">
                     <table class="table table-bordered" width="100%">
                         <tr>
-                            <td>Name</td>
+                            <td valign="middle">Name</td>
                             <td><input type="text" class="form-control" name="editContactName" id="editContactName" /></td>
                         </tr>
                         <tr>
-                            <td>Country Code</td>
-                            <td><input type="number" class="form-control" name="editContactCCode" id="editContactCCode" required /></td>
+                            <td valign="middle">Country Code</td>
+                            <td><input class="form-control" name="editContactCCode" id="editContactCCode" required /></td>
                         </tr>
                         <tr>
-                            <td>Phone Number</td>
-                            <td><input type="number" class="form-control" name="editContactPhoneNumber" id="editContactPhoneNumber" required /></td>
+                            <td valign="middle">Phone Number</td>
+                            <td><input class="form-control" name="editContactPhoneNumber" id="editContactPhoneNumber" required /></td>
                         </tr>
                     </table>
                     </div>
