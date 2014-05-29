@@ -30,25 +30,5 @@ module.exports = function(app) {
             logger("ERROR", "Table name is not specified/not valid.");
             res.send(403);
         }
-        // if(_.has(req.body, "tablename")) {
-        //     new Contact({"Name": req.body.key}).select("*", false, function(err, names) {
-        //         if (err) {
-        //             res.send(500);
-        //         } else {
-        //             new Contact({"Number": req.body.key}).select("*", false, function(err1, numbers) {
-        //                 if (err1) {
-        //                     res.send(500);
-        //                 } else {
-        //                     res.send({
-        //                         "results": _.uniq(names.concat(numbers), false, function(currentObject) {
-        //                             return currentObject.ID;
-        //                         })
-        //                     });
-        //                 }
-        //             });
-        //         }
-        //     });
-        // }
-
     });
 };

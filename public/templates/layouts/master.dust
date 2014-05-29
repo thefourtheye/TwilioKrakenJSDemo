@@ -47,7 +47,6 @@
             padding-right: 24px;
             padding-bottom: 14px;
             padding-left: 24px;
-            width: 60%;
             height: 400px;
         }
     </style>
@@ -82,26 +81,20 @@
             }
         }
 
-        var Cache = new LocalCache();
-
-        $(document).ready(function() {
-            alert("Ready!!!");
-            Cache.reloadCache("Contacts");
-            Cache.reloadCache("SpeedDial");
-            Cache.reloadCache("CallLogs");
-
-            $("#callKey").select2({
+        var Cache = new LocalCache(),
+            CallBoxOptions = {
                 id: function(currentObject) {
                     return currentObject.ID;
                 },
                 formatResult: function formatResult(currentObject) {
                     return "<div id='id" + currentObject.ID + "'>" +
                         (currentObject.Name ? "<h4>" + currentObject.Name + "</h4>" : "") +
-                        currentObject.Number + "</div>";
+                        "+" + currentObject.CountryCode + " " + currentObject.Number + "</div>";
                 },
                 formatSelection: function formatSelection(currentObject) {
                     return "<div id='id" + currentObject.ID + "'>" +
-                        (currentObject.Number? "<b>" + currentObject.Number + "</b> - " : "") +
+                        (currentObject.Number? "<b>" + "+" + currentObject.CountryCode + " "
+                            + currentObject.Number + "</b> - " : "") +
                         currentObject.Name + "</div>";
                 },
                 query: function(query) {
@@ -114,16 +107,56 @@
                             });
                             if (!temp.length) {
                                 temp.push({
-                                    ID: 0,
-                                    Name: query.term,
+                                    ID: "Custom" + term,
+                                    Name: term,
                                     Number: ""
                                 });
                             }
                             return temp;
                         })()
                     });
+                    $("#callKey").select2('data', null);
+                    $("#callKey").select2('val', "");
+                    $("#callKey").val('');
                 }
-            });
+            },
+            ContactsBoxOptions = {
+                id: function(currentObject) {
+                    return currentObject.ID;
+                },
+                formatResult: function formatResult(currentObject) {
+                    return "<div id='id" + currentObject.ID + "'>" +
+                        (currentObject.Name ? "<h4>" + currentObject.Name + "</h4>" : "") +
+                        "+" + currentObject.CountryCode + " " + currentObject.Number + "</div>";
+                },
+                formatSelection: function formatSelection(currentObject) {
+                    return "<div id='id" + currentObject.ID + "'>" +
+                        (currentObject.Number? "<b>" + "+" + currentObject.CountryCode + " "
+                            + currentObject.Number + "</b> - " : "") +
+                        currentObject.Name + "</div>";
+                },
+                query: function(query) {
+                    var term = query.term.toLowerCase();
+                    query.callback({
+                        "results": (Cache.get("Contacts") || []).filter(function(currentObject) {
+                                return currentObject.Name.toLowerCase().indexOf(term) + 1 ||
+                                    currentObject.Number.toLowerCase().indexOf(term) + 1;
+                            })
+                    });
+                    $("#contactsSearch").select2('data', null);
+                    $("#contactsSearch").select2('val', "");
+                    $("#contactsSearch").val("");
+                }
+            };
+
+        $(document).ready(function() {
+            Cache.reloadCache("Contacts");
+            Cache.reloadCache("SpeedDial");
+            Cache.reloadCache("CallLogs");
+
+            $("#callKey").select2(CallBoxOptions);
+
+            $("#contactsSearch").select2(ContactsBoxOptions);
 
             $('#myTabs a').click(function (e) {
                 e.preventDefault();
@@ -143,7 +176,7 @@
         <center>
             <ul id="myTabs" class="nav nav-tabs">
                 <li class="active"><a href="#dialer" data-toggle="tab">Dialer</a></li>
-                <li><a href="#" data-toggle="tab">Contacts</a></li>
+                <li><a href="#contacts" data-toggle="tab">Contacts</a></li>
                 <li><a href="#" data-toggle="tab">Speed Dial</a></li>
             </ul>
 
@@ -153,7 +186,7 @@
                 </div>
 
                 <div id="contacts" class="ptserif mainbox tab-pane fade">
-                    {+dialerBody /}
+                    {+contactsBody /}
                 </div>
 
                 <div id="speeddial" class="ptserif mainbox tab-pane fade">

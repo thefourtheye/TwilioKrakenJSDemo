@@ -2,78 +2,241 @@
 
 {<dialerBody}
     <form method="post">
+        <script>
+            function callButtonClicked() {
+                var ID = $("#callKey").val(), type = "DB";
+                if (ID.indexOf("Custom") === 0) {
+                    type = "Custom";
+                    ID = ID.replace("Custom", "");
+                }
+                if (ID.match(/^\d+$/)) {
+                    ID = parseInt(ID, 10);
+                    $.ajax("/makecall", {
+                        "type": "POST",
+                        "data": {
+                            "_csrf": $("#_csrf").val(),
+                            "type": type,
+                            "number": ID
+                        },
+                        "error": function() {
+                            alert("Calling failed!");
+                        }
+                    }).done(function(data) {
+                        alert("Call Triggered!");
+                    });
+                } else {
+                    alert("Invalid number to Call.");
+                }
+            }
+        </script>
         <input type="hidden" name="_csrf" id="_csrf" value="{_csrf}" />
         <div class="control-group">
             <div class="controls">
                 <input id="callKey" name="callKey" class="input-xxlarge" type="hidden" style="width:100%"
                     class="ptserif" required />
             </div>
+            <br />
+            <div>
+                <button type="button" class="btn btn-success btn-lg" onclick="callButtonClicked();">
+                    <span class="glyphicon glyphicon-earphone"></span> Call
+                </button>
+            </div>
         </div>
     </form>
-
-    <!-- <table class="table">
-        <tr>
-            <td colspan="3" style="border-top-color: transparent;">
-                <input class="numberbox" id="numbox" name="numbox" disabled="disabled"/>
-            </td>
-        </tr>
-        <tr>
-            <td style="border-top-color: transparent">
-            </td>
-        </tr>
-        <tr>
-            <td width="33%" style="border-top-color: transparent">
-                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
-                    onclick="numberPressed('1');">1</button>
-            </td>
-            <td width="33%" style="border-top-color: transparent">
-                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
-                    onclick="numberPressed('2');">2</button>
-            </td>
-            <td width="33%" style="border-top-color: transparent">
-                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
-                    onclick="numberPressed('3');">3</button>
-            </td>
-        </tr>
-        <tr>
-            <td style="border-top-color: transparent">
-                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
-                    onclick="numberPressed('4');">4</button>
-            </td>
-            <td style="border-top-color: transparent">
-                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
-                    onclick="numberPressed('5');">5</button>
-            </td style="border-top-color: transparent">
-            <td style="border-top-color: transparent">
-                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
-                    onclick="numberPressed('6');">6</button>
-            </td>
-        </tr>
-        <tr>
-            <td style="border-top-color: transparent">
-                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
-                    onclick="numberPressed('7');">7</button>
-            </td>
-            <td style="border-top-color: transparent">
-                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
-                    onclick="numberPressed('8');">8</button>
-            </td>
-            <td style="border-top-color: transparent">
-                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
-                    onclick="numberPressed('9');">9</button>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <button type="button" class="btn btn-lg btn-primary" style="width: 100%">Clear</button>
-            </td>
-            <td>
-                <button type="button" class="btn btn-lg btn-primary" style="width: 100%" 
-                    onclick="numberPressed('0');">0</button>
-            </td>
-            <td>
-                <button type="button" class="btn btn-lg btn-success" style="width: 100%">Call</button>
-            </td>
-        </tr>
-    </table>-->
 {/dialerBody}
+
+{<contactsBody}
+    <script>
+        function deleteSelectedContact() {
+            var ID = $("#contactsSearch").val();
+            if (!ID) {
+                alert("Please select a contact to delete");
+            } else {
+                $('.modal').modal('hide');
+                $('#deleteContactConfirmModal').modal('show');
+            }
+        }
+
+        function editSelectedContact() {
+            var ID = $("#contactsSearch").val();
+            if (!ID) {
+                alert("Please select a contact to edit");
+            } else {
+                ID = parseInt(ID, 10);
+                var obj = Cache.get("Contacts").filter(function(currentObject) {
+                    return (currentObject.ID === ID);
+                })[0];
+                $("#editContactName").val(obj.Name);
+                $("#editContactCCode").val(obj.CountryCode);
+                $("#editContactPhoneNumber").val(obj.Number);
+
+                $('#EditModalTitle').text("Edit Contact");
+                $('.modal').modal('hide');
+                $('#editContactModal').modal('show');
+            }
+        }
+
+        function addNewContact() {
+            $("#contactsSearch").select2('data', null);
+            $("#contactsSearch").select2('val', "");
+
+            $("#editContactName").val("");
+            $("#editContactCCode").val("");
+            $("#editContactPhoneNumber").val("");
+
+            $('#EditModalTitle').text("Create new Contact");
+            $('.modal').modal('hide');
+            $('#editContactModal').modal('show');
+        }
+    </script>
+    <form method="post">
+        <input type="hidden" name="_csrf" id="_csrf" value="{_csrf}" />
+
+        <div class="control-group">
+            <label class="control-label" for="contactsSearch">Search Contact</label> <br /> <br />
+            <div class="controls">
+                <input id="contactsSearch" name="contactsSearch" style="width:100%" type="hidden"
+                    class="ptserif" required/>
+            </div><br/><br/>
+            <table class="table" style="text-align: center" width="100%">
+                <tr>
+                    <td style="border-top-color: transparent;">
+                        <button type="button" class="btn btn-success btn-lg"
+                            onclick="addNewContact()">Add new</button>
+                    </td>
+                    <td style="border-top-color: transparent;">
+                        <button type="button" class="btn btn-success btn-lg"
+                            onclick="editSelectedContact()">Edit Selected</button>
+                    </td>
+                    <td style="border-top-color: transparent;">
+                        <button type="button" class="btn btn-success btn-lg"
+                            onclick="deleteSelectedContact()">Delete Selected</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="modal fade" id="deleteContactConfirmModal" tabindex="-1" role="dialog"
+            aria-hidden="true">
+            <script>
+                function confirmDelete() {
+                    $.ajax("/contacts", {
+                        "type": "POST",
+                        "data": {
+                            "_csrf": $("#_csrf").val(),
+                            "type": "delete",
+                            "ID": $("#contactsSearch").val()
+                        },
+                        "error": function() {
+                            alert("Deleting failed!");
+                        }
+                    }).done(function(data) {
+                        alert("Successfully deleted!");
+                        Cache.reloadCache("Contacts");
+                        Cache.reloadCache("SpeedDial");
+                        $("#callKey").select2(CallBoxOptions);
+                        $("#contactsSearch").select2(ContactsBoxOptions);
+                    });
+                    $('#deleteContactConfirmModal').modal('hide');
+                }
+            </script>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"
+                            aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Confirm Delete</h4>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure want to delete this Contact?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="confirmDelete()">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="editContactModal" tabindex="-2" role="dialog"
+            aria-hidden="true">
+            <script>
+                function updateContact() {
+                    if ($("#contactsSearch").val()) {
+                        $.ajax("/contacts", {
+                            "type": "POST",
+                            "data": {
+                                "_csrf": $("#_csrf").val(),
+                                "type": "update",
+                                "ID": $("#contactsSearch").val(),
+                                "Name": $("#editContactName").val(),
+                                "CountryCode": $("#editContactCCode").val(),
+                                "Number": $("#editContactPhoneNumber").val()
+                            },
+                            "error": function() {
+                                alert("Updation failed!");
+                            }
+                        }).done(function(data) {
+                            alert("Successfully Updated!");
+                            Cache.reloadCache("Contacts");
+                            Cache.reloadCache("SpeedDial");
+                            $("#callKey").select2(CallBoxOptions);
+                            $("#contactsSearch").select2(ContactsBoxOptions);
+                        });
+                    } else {
+                        $.ajax("/contacts", {
+                            "type": "POST",
+                            "data": {
+                                "_csrf": $("#_csrf").val(),
+                                "type": "insert",
+                                "Name": $("#editContactName").val(),
+                                "CountryCode": $("#editContactCCode").val(),
+                                "Number": $("#editContactPhoneNumber").val()
+                            },
+                            "error": function() {
+                                alert("Insertion failed!");
+                            }
+                        }).done(function(data) {
+                            alert("Successfully Inserted!");
+                            Cache.reloadCache("Contacts");
+                            Cache.reloadCache("SpeedDial");
+                            $("#callKey").select2(CallBoxOptions);
+                            $("#contactsSearch").select2(ContactsBoxOptions);
+                        });
+                    }
+                    $('#editContactModal').modal('hide');
+                }
+            </script>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"
+                            aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="EditModalTitle">Edit Contact</h4>
+                    </div>
+                    <div class="modal-body">
+                    <table class="table table-bordered" width="100%">
+                        <tr>
+                            <td>Name</td>
+                            <td><input type="text" class="form-control" name="editContactName" id="editContactName" /></td>
+                        </tr>
+                        <tr>
+                            <td>Country Code</td>
+                            <td><input type="number" class="form-control" name="editContactCCode" id="editContactCCode" required /></td>
+                        </tr>
+                        <tr>
+                            <td>Phone Number</td>
+                            <td><input type="number" class="form-control" name="editContactPhoneNumber" id="editContactPhoneNumber" required /></td>
+                        </tr>
+                    </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="updateContact()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+{/contactsBody}
