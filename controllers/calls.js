@@ -23,9 +23,8 @@ module.exports = function(app) {
     });
 
     app.get('/acceptedCall', function(req, res) {
-        console.log(req.body);
         res.set('Content-Type', 'text/xml');
         res.send('<?xml version="1.0" encoding="UTF-8" ?><Response>' +
-            "<Say>Hello from twilio-krakenjs-demo application</Say></Response>");
+            "<Say>Hello from twilio Kraken JS demo application</Say></Response>");
     });
 }
