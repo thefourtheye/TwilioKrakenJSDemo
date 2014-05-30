@@ -12,14 +12,17 @@ var _ = require("lodash"),
             "Name": "ASC"
         },
         SpeedDial: null,
-        CallLogs: null
+        CallLogs: {
+            "CallTime": "DESC"
+        }
     };
 
 module.exports = function(app) {
     app.post('/loadtables', function(req, res) {
         if (_.has(req.body, "tablename") && _.has(Tables, req.body.tablename)) {
-            new Tables[req.body.tablename]()
-                .select("*", false, DefaultSortObjects[req.body.tablename], function(err, rows) {
+            var table = req.body.tablename;
+            new Tables[table]()
+                .select("*", false, DefaultSortObjects[table], function(err, rows) {
                     if (err) {
                         throw new CommonError(err);
                     } else {

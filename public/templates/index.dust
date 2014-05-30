@@ -90,6 +90,7 @@
                         }
                     }).done(function(data) {
                         alert("Call Triggered!");
+                        reloadCallLogsTable();
                     });
                 } else {
                     alert("Invalid number to Call.");
@@ -437,3 +438,88 @@
         </div>
     </form>
 {/speedDialBody}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{<callLogsBody}
+    <script>
+        function addNewSpeedDial() {
+            var speedDialID = $("#freeSpeedDialSlots").val(),
+                contactID = $("#freeSpeedDialContacts").val();
+            if (!speedDialID || !contactID) {
+                alert("Please select both free slot and contact to assign.");
+            } else {
+                $.ajax("/speeddial", {
+                    "type": "POST",
+                    "data": {
+                        "_csrf": $("#_csrf").val(),
+                        "type": "insert",
+                        "ID": speedDialID,
+                        "ContactID": contactID
+                    },
+                    "error": function() {
+                        alert("Speed dial assignment failed!");
+                    }
+                }).done(function(data) {
+                    alert("Speed dial assignment Success!");
+                    Cache.reloadCache("SpeedDial");
+                    $("#callKey").select2(CallBoxOptions);
+                    $("#freeSpeedDialSlots").select2(FreeSpeedDialSlotsOptions);
+                    $("#freeSpeedDialContacts").select2(FreeSpeedDialContactsOptions);
+                });
+            }
+        }
+    </script>
+    <div>
+        <table class="table table-bordered" id="callLogsTable">
+            <thead>
+                <tr>
+                    <th>Name</th><th>Number Dialled</th><th>Time of Call</th>
+                </tr>
+            </thead>
+            <tbody id="callLogsBody">
+            </tbody>
+        </table>
+    </div>
+{/callLogsBody}
+

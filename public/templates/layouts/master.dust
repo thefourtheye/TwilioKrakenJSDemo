@@ -54,12 +54,7 @@
         function LocalCache() {
             var cache = {};
             return {
-                "clearCache": function (tableName) {
-                    if (Object.prototype.toString.call(tableName).indexOf("String") + 1 && tableName) {
-                        cache[tableName.toLowerCase()] = {};
-                    }
-                },
-                "reloadCache": function (tableName) {
+                "reloadCache": function (tableName, callback) {
                     if (Object.prototype.toString.call(tableName).indexOf("String") + 1 && tableName) {
                         $.ajax("/loadtables", {
                             "type": "POST",
@@ -72,6 +67,9 @@
                             }
                         }).done(function(data) {
                             cache[tableName.toLowerCase()] = data;
+                            if (callback) {
+                                callback(data);
+                            }
                         });
                     }
                 },
@@ -238,24 +236,30 @@
         $(document).ready(function() {
             Cache.reloadCache("Contacts");
             Cache.reloadCache("SpeedDial");
-            Cache.reloadCache("CallLogs");
 
             $("#callKey").select2(CallBoxOptions);
-
             $("#contactsSearch").select2(ContactsBoxOptions);
-
             $("#freeSpeedDialSlots").select2(FreeSpeedDialSlotsOptions);
-
             $("#freeSpeedDialContacts").select2(FreeSpeedDialContactsOptions);
-
             $("#speedDialContacts").select2(SpeedDialContactsOptions);
-
             $('#myTabs a').click(function (e) {
                 e.preventDefault();
                 $(this).tab('show');
             });
 
+            reloadCallLogsTable();
         });
+
+        function reloadCallLogsTable() {
+            Cache.reloadCache("CallLogs", function(callLogs) {
+                $('#callLogsTable tr').remove();
+                $('#callLogsTable').append("<tr><th>Name</th><th>Number</th><th>Time of Call</th></tr>");
+                callLogs.forEach(function(currentLog) {
+                    $('#callLogsTable').append("<tr><td>" + currentLog.Name + "</td><td>" +
+                        currentLog.Number + "</td><td>" + new Date(currentLog.CallTime) + "</td></tr>");
+                });
+            });
+        }
     </script>
 </head>
 
@@ -270,6 +274,7 @@
                 <li class="active"><a href="#dialer" data-toggle="tab">Dialer</a></li>
                 <li><a href="#contacts" data-toggle="tab">Contacts</a></li>
                 <li><a href="#speeddial" data-toggle="tab">Speed Dial</a></li>
+                <li><a href="#calllogs" data-toggle="tab">Call Logs</a></li>
             </ul>
 
             <div class="tab-content">
@@ -283,6 +288,10 @@
 
                 <div id="speeddial" class="ptserif mainbox tab-pane fade">
                     {+speedDialBody /}
+                </div>
+
+                <div id="calllogs" class="ptserif mainbox tab-pane fade">
+                    {+callLogsBody /}
                 </div>
             </div>
 
