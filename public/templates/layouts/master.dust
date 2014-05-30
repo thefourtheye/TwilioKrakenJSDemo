@@ -79,34 +79,47 @@
             }
         }
 
+        function formatSelection(obj) {
+            return "<div id='id" + obj.ID + "'>" +
+                (obj.Name ? "<b>" + obj.Name + "</b>" : "") +
+                (obj.CountryCode + "" + obj.Number ?
+                    (" - +" + obj.CountryCode + " " + obj.Number): "") + 
+                (obj.hasOwnProperty("SpeedDialID") ? ", <b>Speed Dial: " + obj.SpeedDialID + "</b>": "") +
+                "</div>";
+        }
+
+        function formatResult(obj) {
+            return "<div id='id" + obj.ID + "'>" +
+                (obj.Name ? "<h4>" + obj.Name + "</h4>" : "") +
+                (obj.CountryCode + "" + obj.Number ?
+                    ("+" + obj.CountryCode + " " + obj.Number): "") + 
+                (obj.hasOwnProperty("SpeedDialID") ? ", <b>Speed Dial: " + obj.SpeedDialID + "</b>": "") +
+                "</div>";
+        }
+
+        function idFunction(obj) {
+            return obj.hasOwnProperty("ID") ? obj.ID : obj.SpeedDialID;
+        }
+
         var Cache = new LocalCache(),
             CallBoxOptions = {
-                id: function(currentObject) {
-                    return currentObject.ID;
-                },
-                formatResult: function formatResult(currentObject) {
-                    return "<div id='id" + currentObject.ID + "'>" +
-                        (currentObject.Name ? "<h4>" + currentObject.Name + "</h4>" : "") +
-                        "+" + currentObject.CountryCode + " " + currentObject.Number + "</div>";
-                },
-                formatSelection: function formatSelection(currentObject) {
-                    return "<div id='id" + currentObject.ID + "'>" +
-                        (currentObject.Number? "<b>" + "+" + currentObject.CountryCode + " "
-                            + currentObject.Number + "</b> - " : "") +
-                        currentObject.Name + "</div>";
-                },
+                placeholder: "Type name or number",
+                id: idFunction,
+                formatResult: formatResult,
+                formatSelection: formatSelection,
                 query: function(query) {
                     var term = query.term.toLowerCase();
                     query.callback({
                         "results": (function() {
-                            var temp = (Cache.get("Contacts") || []).filter(function(currentObject) {
-                                return currentObject.Name.toLowerCase().indexOf(term) + 1 ||
-                                    currentObject.Number.toLowerCase().indexOf(term) + 1;
+                            var temp = (Cache.get("Contacts") || []).filter(function(obj) {
+                                return obj.Name.toLowerCase().indexOf(term) + 1 ||
+                                    obj.Number.toLowerCase().indexOf(term) + 1;
                             });
                             if (!temp.length && term) {
                                 temp.push({
                                     ID: "Custom" + term,
                                     Name: term,
+                                    CountryCode: "",
                                     Number: ""
                                 });
                             }
@@ -118,26 +131,16 @@
                 }
             },
             ContactsBoxOptions = {
-                id: function(currentObject) {
-                    return currentObject.ID;
-                },
-                formatResult: function formatResult(currentObject) {
-                    return "<div id='id" + currentObject.ID + "'>" +
-                        (currentObject.Name ? "<h4>" + currentObject.Name + "</h4>" : "") +
-                        "+" + currentObject.CountryCode + " " + currentObject.Number + "</div>";
-                },
-                formatSelection: function formatSelection(currentObject) {
-                    return "<div id='id" + currentObject.ID + "'>" +
-                        (currentObject.Number? "<b>" + "+" + currentObject.CountryCode + " "
-                            + currentObject.Number + "</b> - " : "") +
-                        currentObject.Name + "</div>";
-                },
+                placeholder: "Type name or number",
+                id: idFunction,
+                formatResult: formatResult,
+                formatSelection: formatSelection,
                 query: function(query) {
                     var term = query.term.toLowerCase();
                     query.callback({
-                        "results": (Cache.get("Contacts") || []).filter(function(currentObject) {
-                                return currentObject.Name.toLowerCase().indexOf(term) + 1 ||
-                                    currentObject.Number.toLowerCase().indexOf(term) + 1;
+                        "results": (Cache.get("Contacts") || []).filter(function(obj) {
+                                return obj.Name.toLowerCase().indexOf(term) + 1 ||
+                                    obj.Number.toLowerCase().indexOf(term) + 1;
                             })
                     });
                     $("#contactsSearch").select2('data', null);
@@ -145,6 +148,7 @@
                 }
             },
             FreeSpeedDialSlotsOptions = {
+                placeholder: "Select a free SpeedDial slot",
                 query: function(query) {
                     var available = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
                         actual = Cache.get("SpeedDial");
@@ -152,15 +156,15 @@
                     $("#freeSpeedDialSlots").select2('val', "");
 
                     query.callback({
-                        results: available.filter(function(currentObject) {
-                            var num = parseInt(currentObject, 10);
-                            return !actual.some(function(currentObject) {
-                                return currentObject.ID === num;
+                        results: available.filter(function(obj) {
+                            var num = parseInt(obj, 10);
+                            return !actual.some(function(obj) {
+                                return obj.ID === num;
                             });
-                        }).map(function(currentObject) {
+                        }).map(function(obj) {
                             return {
-                                id: currentObject,
-                                text: currentObject
+                                id: obj,
+                                text: obj
                             }
                         })
                     });
@@ -169,28 +173,18 @@
                 }
             },
             FreeSpeedDialContactsOptions = {
-                id: function(currentObject) {
-                    return currentObject.ID;
-                },
-                formatResult: function formatResult(currentObject) {
-                    return "<div id='id" + currentObject.ID + "'>" +
-                        (currentObject.Name ? "<h4>" + currentObject.Name + "</h4>" : "") +
-                        "+" + currentObject.CountryCode + " " + currentObject.Number + "</div>";
-                },
-                formatSelection: function formatSelection(currentObject) {
-                    return "<div id='id" + currentObject.ID + "'>" +
-                        (currentObject.Number? "<b>" + "+" + currentObject.CountryCode + " "
-                            + currentObject.Number + "</b> - " : "") +
-                        currentObject.Name + "</div>";
-                },
+                placeholder: "Type name or number",
+                id: idFunction,
+                formatResult: formatResult,
+                formatSelection: formatSelection,
                 query: function(query) {
                     var contacts = Cache.get("Contacts"), speeddial = Cache.get("SpeedDial");
                     query.callback({
-                        results: contacts.filter(function(currentObject) {
-                            return (currentObject.Name.indexOf(query.term) + 1 ||
-                                currentObject.Number.indexOf(query.term) + 1) &&
+                        results: contacts.filter(function(obj) {
+                            return (obj.Name.indexOf(query.term) + 1 ||
+                                obj.Number.indexOf(query.term) + 1) &&
                                 speeddial.every(function(currentSpeedDial) {
-                                    return currentSpeedDial.ContactID !== currentObject.ID;
+                                    return currentSpeedDial.ContactID !== obj.ID;
                                 });
                         })
                     });
@@ -199,37 +193,27 @@
                 }
             },
             SpeedDialContactsOptions = {
-                id: function(currentObject) {
-                    return currentObject.SpeedDialID;
-                },
-                formatResult: function formatResult(currentObject) {
-                    return "<div id='id" + currentObject.SpeedDialID + "'>" +
-                        (currentObject.Name ? "<h4>" + currentObject.Name + "</h4>" : "") +
-                        "+" + currentObject.CountryCode + " " + currentObject.Number + 
-                        ", Speed Dial: " + currentObject.SpeedDialID + "</div>";
-                },
-                formatSelection: function formatSelection(currentObject) {
-                    return "<div id='id" + currentObject.SpeedDialID + "'>" +
-                        (currentObject.Number? "<b>" + "+" + currentObject.CountryCode + " "
-                            + currentObject.Number + "</b> - " : "") +
-                        currentObject.Name + 
-                        ", Speed Dial: " + currentObject.SpeedDialID + "</div>";
-                },
+                placeholder: "Type SpeedDial ID",
+                id: idFunction,
+                formatResult: formatResult,
+                formatSelection: formatSelection,
                 query: function(query) {
                     var contacts = Cache.get("Contacts"), speeddial = Cache.get("SpeedDial");
                     query.callback({
                         results: (function() {
-                            return speeddial.filter(function(currentObject) {
+                            return speeddial.filter(function(obj) {
                                 if (query.term) {
-                                    return currentObject.ID === parseInt(query.term, 10);
+                                    return obj.ID === parseInt(query.term, 10);
                                 }
                                 return 1;
-                            }).map(function(currentObject) {
+                            }).map(function(obj) {
                                 var contact = contacts.filter(function(currentContact) {
-                                    return currentObject.ContactID === currentContact.ID;
+                                    return obj.ContactID === currentContact.ID;
                                 });
                                 contact = contact[0];
-                                contact.SpeedDialID = currentObject.ID;
+                                contact = JSON.parse(JSON.stringify(contact));
+                                contact.SpeedDialID = obj.ID;
+                                contact.ID = obj.ID;
                                 return contact;
                             });
                         })()

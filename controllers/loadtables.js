@@ -1,4 +1,5 @@
-'use strict';
+"use strict";
+
 var _ = require("lodash"),
     CommonError = require("../lib/util/commonerror"),
     logger = require("../lib/util/logger"),
@@ -18,7 +19,7 @@ var _ = require("lodash"),
     };
 
 module.exports = function(app) {
-    app.post('/loadtables', function(req, res) {
+    app.post("/loadtables", function(req, res) {
         if (_.has(req.body, "tablename") && _.has(Tables, req.body.tablename)) {
             var table = req.body.tablename;
             new Tables[table]()
@@ -28,7 +29,7 @@ module.exports = function(app) {
                     } else {
                         res.send(rows);
                     }
-                })
+                });
         } else {
             logger("ERROR", "Table name is not specified/not valid.");
             res.send(403);

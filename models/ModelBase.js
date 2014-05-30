@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 var db = require("../lib/db/dbmanager.js").getDBObject(),
     _ = require("lodash");
@@ -9,7 +9,12 @@ function Model(database, table) {
 }
 
 Model.prototype.select = function(columns, exact, sort, callBack) {
-    db.fetch(this.__database, this.__table, columns, this.__data, exact, sort, callBack);
+    db.fetch(this.__database, this.__table, {
+        columns: columns,
+        sort: sort,
+        exact: exact,
+        criteria: this.__data
+    }, callBack);
 };
 
 Model.prototype.insert = function() {
@@ -22,7 +27,7 @@ Model.prototype.purge = function() {
 
 Model.prototype.update = function(criteria) {
     db.update(this.__database, this.__table, this.__data, criteria);
-}
+};
 
 Model.prototype.query = db.query;
 

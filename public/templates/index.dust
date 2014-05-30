@@ -164,7 +164,6 @@
                 $('.modal').modal('hide');
                 $('#deleteContactConfirmModal').modal('show');
             }
-            clearFields();
         }
 
         function editSelectedContact() {
@@ -184,7 +183,6 @@
                 $('.modal').modal('hide');
                 $('#editContactModal').modal('show');
             }
-            clearFields();
         }
 
         function addNewContact() {
@@ -195,8 +193,6 @@
             $('#EditModalTitle').text("Create new Contact");
             $('.modal').modal('hide');
             $('#editContactModal').modal('show');
-
-            clearFields();
         }
     </script>
     <form method="post">

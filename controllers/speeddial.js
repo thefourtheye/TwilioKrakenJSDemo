@@ -1,11 +1,12 @@
-'use strict';
+"use strict";
+
 var _ = require("lodash"),
     CommonError = require("../lib/util/commonerror"),
     logger = require("../lib/util/logger"),
     SpeedDial = require("../models/SpeedDial");
 
 module.exports = function(app) {
-    app.post('/speeddial', function(req, res) {
+    app.post("/speeddial", function(req, res) {
         if (_.has(req.body, "type")) {
             if (req.body.type === "insert") {
                 new SpeedDial({
@@ -22,4 +23,4 @@ module.exports = function(app) {
             res.send(403);
         }
     });
-}
+};

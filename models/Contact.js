@@ -1,3 +1,5 @@
+"use strict";
+
 var modelBase = require("./ModelBase"),
     util = require("util");
 

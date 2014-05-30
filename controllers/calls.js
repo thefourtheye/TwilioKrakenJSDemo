@@ -1,4 +1,5 @@
-'use strict';
+"use strict";
+
 var _ = require("lodash"),
     CommonError = require("../lib/util/commonerror"),
     logger = require("../lib/util/logger"),
@@ -9,8 +10,8 @@ var _ = require("lodash"),
     CallLog = require("../models/CallLog");
 
 module.exports = function(app) {
-    app.post('/call', function(req, res) {
-        var client = require('twilio')(accountSid, authToken);
+    app.post("/call", function(req, res) {
+        var client = require("twilio")(accountSid, authToken);
 
         client.calls.create({
             to: req.body.number,
@@ -25,15 +26,15 @@ module.exports = function(app) {
         new CallLog({
             "Name": req.body.name || "",
             "Number": req.body.number || "",
-            "CallTime": (new Date).getTime()
+            "CallTime": (new Date()).getTime()
         }).insert();
 
         res.send(200);
     });
 
-    app.get('/acceptedCall', function(req, res) {
-        res.set('Content-Type', 'text/xml');
-        res.send('<?xml version="1.0" encoding="UTF-8" ?><Response>' +
+    app.get("/acceptedCall", function(req, res) {
+        res.set("Content-Type", "text/xml");
+        res.send("<?xml version=\"1.0\" encoding=\"UTF-8\" ?><Response>" +
             "<Say>Hello from twilio Kraken JS demo application</Say></Response>");
     });
-}
+};
