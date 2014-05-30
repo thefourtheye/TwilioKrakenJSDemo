@@ -17,7 +17,9 @@ module.exports = function(app) {
                 var numberRegEx = /^\d+$/;
                 if (!req.body.CountryCode || !req.body.Number || !req.body.CountryCode.match(numberRegEx) || !req.body.Number.match(numberRegEx)) {
                     logger("ERROR", "Number and Country Code fields can have only numbers!");
-                    res.send(403);
+                    res.send(403, {
+                        message: "Number and Country Code fields can have only numbers!"
+                    });
                 } else {
                     new Contacts({
                         Name: req.body.Name,
@@ -32,7 +34,9 @@ module.exports = function(app) {
                 var numberRegEx = /^\d+$/;
                 if (!req.body.CountryCode || !req.body.Number || !req.body.CountryCode.match(numberRegEx) || !req.body.Number.match(numberRegEx)) {
                     logger("ERROR", "Number and Country Code fields can have only numbers!");
-                    res.send(403);
+                    res.send(403, {
+                        message: "Number and Country Code fields can have only numbers!"
+                    });
                 } else {
                     new Contacts({
                         Name: req.body.Name,
@@ -44,7 +48,9 @@ module.exports = function(app) {
             }
         } else {
             logger("ERROR", "Invalid Contact operation");
-            res.send(403);
+            res.send(403, {
+                message: "Invalid Contact operation"
+            });
         }
     });
 };
