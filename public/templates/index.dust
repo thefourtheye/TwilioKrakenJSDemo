@@ -3,20 +3,87 @@
 {<dialerBody}
     <form method="post">
         <script>
-            function callButtonClicked() {
-                var ID = $("#callKey").val(), type = "DB";
+            function clearSpeedDial() {
+                var ID = $("#speedDialContacts").val();
+                if (!ID) {
+                    alert("Invalid Speed Dial number to remove!");
+                    return;
+                }
+                $.ajax("/speeddial", {
+                    "type": "POST",
+                    "data": {
+                        "_csrf": $("#_csrf").val(),
+                        "type": "delete",
+                        "ID": ID
+                    },
+                    "error": function() {
+                        alert("Deleting failed!");
+                    }
+                }).done(function(data) {
+                    alert("Successfully cleared the Speeddial link!");
+                    Cache.reloadCache("SpeedDial");
+                    $("#speedDialContacts").select2(SpeedDialContactsOptions);
+                    $("#freeSpeedDialSlots").select2(FreeSpeedDialSlotsOptions);
+                    $("#freeSpeedDialContacts").select2(FreeSpeedDialContactsOptions);
+
+                    $("#speedDialContacts").select2('data', null);
+                    $("#speedDialContacts").select2('val', "");
+                });
+            }
+
+            function callButtonClicked(obj) {
+                var ID = $("#" + obj).val(), type = "DB", number, name;
                 if (ID.indexOf("Custom") === 0) {
                     type = "Custom";
                     ID = ID.replace("Custom", "");
+                } else if (obj === "speedDialContacts") {
+                    type = "SpeedDial";
                 }
-                if (ID.match(/^\d+$/)) {
-                    ID = parseInt(ID, 10);
+
+                if (ID.match(/^[\d\s+]+$/)) {
+                    ID = parseInt(ID.replace(/[\s+]+/g, ""), 10);
+                    if (!ID) {
+                        alert("Invalid number to Call.");
+                        $("#speedDialContacts").select2('data', null);
+                        $("#speedDialContacts").select2('val', "");
+                        return;
+                    }
+                    if (type === "SpeedDial") {
+                        var speedDial = Cache.get("SpeedDial"), contactID;
+                        for (var i = 0; i < speedDial.length; i += 1) {
+                            if (ID === speedDial[i].ID) {
+                                contactID = speedDial[i].ContactID;
+                                break;
+                            }
+                        }
+
+                        var contacts = Cache.get("Contacts");
+                        for (var i = 0; i < contacts.length; i += 1) {
+                            if (contactID === contacts[i].ID) {
+                                number = contacts[i].CountryCode + contacts[i].Number;
+                                name = contacts[i].Name;
+                                break;
+                            }
+                        }
+                    } else if (type !== "Custom") {
+                        var contacts = Cache.get("Contacts");
+                        for (var i = 0; i < contacts.length; i += 1) {
+                            if (ID === contacts[i].ID) {
+                                number = contacts[i].CountryCode + contacts[i].Number;
+                                name = contacts[i].Name;
+                                break;
+                            }
+                        }
+                    } else {
+                        number = ID;
+                    }
+
                     $.ajax("/call", {
                         "type": "POST",
                         "data": {
                             "_csrf": $("#_csrf").val(),
-                            "type": type,
-                            "number": ID
+                            "number": number || ID,
+                            "name": name || ""
                         },
                         "error": function() {
                             alert("Calling failed!");
@@ -26,6 +93,10 @@
                     });
                 } else {
                     alert("Invalid number to Call.");
+                    $("#speedDialContacts").select2('data', null);
+                    $("#speedDialContacts").select2('val', "");
+                    $("#callKey").select2('data', null);
+                    $("#callKey").select2('val', "");
                 }
             }
         </script>
@@ -37,13 +108,48 @@
             </div>
             <br />
             <div>
-                <button type="button" class="btn btn-success btn-lg" onclick="callButtonClicked();">
-                    <span class="glyphicon glyphicon-earphone"></span> Call
+                <button type="button" class="btn btn-success btn-lg" 
+                    onclick="callButtonClicked('callKey');">
+                    <span class="glyphicon glyphicon-earphone" /> Call
+                </button>
+            </div>
+
+            <br />
+            <br />
+            <div class="controls">
+                <input id="speedDialContacts" name="speedDialContacts" class="input-xxlarge"
+                     type="hidden" style="width:100%" class="ptserif" required />
+            </div>
+            <br />
+            <div>
+                <button type="button" class="btn btn-success btn-lg" 
+                    onclick="callButtonClicked('speedDialContacts');">
+                    <span class="glyphicon glyphicon-earphone"> Speed dial </span>
+                </button> &nbsp; &nbsp; &nbsp;
+                <button type="button" class="btn btn-success btn-lg" 
+                    onclick="clearSpeedDial();">
+                    <span class="glyphicon glyphicon-trash"> Clear Speed Dial </span>
                 </button>
             </div>
         </div>
     </form>
 {/dialerBody}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 {<contactsBody}
     <script>
@@ -240,3 +346,94 @@
 
     </form>
 {/contactsBody}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{<speedDialBody}
+    <script>
+        function addNewSpeedDial() {
+            var speedDialID = $("#freeSpeedDialSlots").val(),
+                contactID = $("#freeSpeedDialContacts").val();
+            if (!speedDialID || !contactID) {
+                alert("Please select both free slot and contact to assign.");
+            } else {
+                $.ajax("/speeddial", {
+                    "type": "POST",
+                    "data": {
+                        "_csrf": $("#_csrf").val(),
+                        "type": "insert",
+                        "ID": speedDialID,
+                        "ContactID": contactID
+                    },
+                    "error": function() {
+                        alert("Speed dial assignment failed!");
+                    }
+                }).done(function(data) {
+                    alert("Speed dial assignment Success!");
+                    Cache.reloadCache("SpeedDial");
+                    $("#callKey").select2(CallBoxOptions);
+                    $("#freeSpeedDialSlots").select2(FreeSpeedDialSlotsOptions);
+                    $("#freeSpeedDialContacts").select2(FreeSpeedDialContactsOptions);
+                });
+            }
+        }
+    </script>
+    <form method="post">
+        <input type="hidden" name="_csrf" id="_csrf" value="{_csrf}" />
+
+        <div class="control-group">
+            <table class="table">
+                <tr>
+                    <th>Free Slots</th><th>Free Contacts</th>
+                </tr>
+                <tr>
+                    <td width="50%">
+                        <input id="freeSpeedDialSlots" name="freeSpeedDialSlots"
+                            style="width:100%" class="ptserif" type="hidden" required />
+                    </td>
+                    <td>
+                        <input id="freeSpeedDialContacts" name="freeSpeedDialContacts"
+                            style="width:100%" type="hidden" class="ptserif" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+                        <button type="button" class="btn btn-success btn-lg"
+                            onclick="addNewSpeedDial()">Set as new Speed Dial</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+{/speedDialBody}

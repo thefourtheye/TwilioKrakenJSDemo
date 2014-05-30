@@ -20,12 +20,12 @@ module.exports = function(app) {
         if (_.has(req.body, "tablename") && _.has(Tables, req.body.tablename)) {
             new Tables[req.body.tablename]()
                 .select("*", false, DefaultSortObjects[req.body.tablename], function(err, rows) {
-                if (err) {
-                    throw new CommonError(err);
-                } else {
-                    res.send(rows);
-                }
-            })
+                    if (err) {
+                        throw new CommonError(err);
+                    } else {
+                        res.send(rows);
+                    }
+                })
         } else {
             logger("ERROR", "Table name is not specified/not valid.");
             res.send(403);

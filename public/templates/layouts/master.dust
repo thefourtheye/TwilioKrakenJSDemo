@@ -117,7 +117,6 @@
                     });
                     $("#callKey").select2('data', null);
                     $("#callKey").select2('val', "");
-                    $("#callKey").val('');
                 }
             },
             ContactsBoxOptions = {
@@ -145,7 +144,94 @@
                     });
                     $("#contactsSearch").select2('data', null);
                     $("#contactsSearch").select2('val', "");
-                    $("#contactsSearch").val("");
+                }
+            },
+            FreeSpeedDialSlotsOptions = {
+                query: function(query) {
+                    var available = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+                        actual = Cache.get("SpeedDial");
+                    $("#freeSpeedDialSlots").select2('data', null);
+                    $("#freeSpeedDialSlots").select2('val', "");
+
+                    query.callback({
+                        results: available.filter(function(currentObject) {
+                            var num = parseInt(currentObject, 10);
+                            return !actual.some(function(currentObject) {
+                                return currentObject.ID === num;
+                            });
+                        }).map(function(currentObject) {
+                            return {
+                                id: currentObject,
+                                text: currentObject
+                            }
+                        })
+                    });
+                }
+            },
+            FreeSpeedDialContactsOptions = {
+                id: function(currentObject) {
+                    return currentObject.ID;
+                },
+                formatResult: function formatResult(currentObject) {
+                    return "<div id='id" + currentObject.ID + "'>" +
+                        (currentObject.Name ? "<h4>" + currentObject.Name + "</h4>" : "") +
+                        "+" + currentObject.CountryCode + " " + currentObject.Number + "</div>";
+                },
+                formatSelection: function formatSelection(currentObject) {
+                    return "<div id='id" + currentObject.ID + "'>" +
+                        (currentObject.Number? "<b>" + "+" + currentObject.CountryCode + " "
+                            + currentObject.Number + "</b> - " : "") +
+                        currentObject.Name + "</div>";
+                },
+                query: function(query) {
+                    var contacts = Cache.get("Contacts"), speeddial = Cache.get("SpeedDial");
+                    query.callback({
+                        results: contacts.filter(function(currentObject) {
+                            return (currentObject.Name.indexOf(query.term) + 1 ||
+                                currentObject.Number.indexOf(query.term) + 1) &&
+                                speeddial.every(function(currentSpeedDial) {
+                                    return currentSpeedDial.ContactID !== currentObject.ID;
+                                });
+                        })
+                    });
+                }
+            },
+            SpeedDialContactsOptions = {
+                id: function(currentObject) {
+                    return currentObject.SpeedDialID;
+                },
+                formatResult: function formatResult(currentObject) {
+                    return "<div id='id" + currentObject.SpeedDialID + "'>" +
+                        (currentObject.Name ? "<h4>" + currentObject.Name + "</h4>" : "") +
+                        "+" + currentObject.CountryCode + " " + currentObject.Number + 
+                        ", Speed Dial: " + currentObject.SpeedDialID + "</div>";
+                },
+                formatSelection: function formatSelection(currentObject) {
+                    return "<div id='id" + currentObject.SpeedDialID + "'>" +
+                        (currentObject.Number? "<b>" + "+" + currentObject.CountryCode + " "
+                            + currentObject.Number + "</b> - " : "") +
+                        currentObject.Name + 
+                        ", Speed Dial: " + currentObject.SpeedDialID + "</div>";
+                },
+                query: function(query) {
+                    var contacts = Cache.get("Contacts"), speeddial = Cache.get("SpeedDial");
+                    query.callback({
+                        results: (function() {
+                            return speeddial.filter(function(currentObject) {
+                                if (query.term) {
+                                    return currentObject.ID === parseInt(query.term, 10);
+                                }
+                                return 1;
+                            }).map(function(currentObject) {
+                                var contact = contacts.filter(function(currentContact) {
+                                    return currentObject.ContactID === currentContact.ID;
+                                });
+                                contact = contact[0];
+                                contact.SpeedDialID = currentObject.ID;
+                                return contact;
+                            });
+                        })()
+                    });
                 }
             };
 
@@ -157,6 +243,12 @@
             $("#callKey").select2(CallBoxOptions);
 
             $("#contactsSearch").select2(ContactsBoxOptions);
+
+            $("#freeSpeedDialSlots").select2(FreeSpeedDialSlotsOptions);
+
+            $("#freeSpeedDialContacts").select2(FreeSpeedDialContactsOptions);
+
+            $("#speedDialContacts").select2(SpeedDialContactsOptions);
 
             $('#myTabs a').click(function (e) {
                 e.preventDefault();
@@ -177,7 +269,7 @@
             <ul id="myTabs" class="nav nav-tabs">
                 <li class="active"><a href="#dialer" data-toggle="tab">Dialer</a></li>
                 <li><a href="#contacts" data-toggle="tab">Contacts</a></li>
-                <li><a href="#" data-toggle="tab">Speed Dial</a></li>
+                <li><a href="#speeddial" data-toggle="tab">Speed Dial</a></li>
             </ul>
 
             <div class="tab-content">
@@ -190,7 +282,7 @@
                 </div>
 
                 <div id="speeddial" class="ptserif mainbox tab-pane fade">
-                    {+dialerBody /}
+                    {+speedDialBody /}
                 </div>
             </div>
 

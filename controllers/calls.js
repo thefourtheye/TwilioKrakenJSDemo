@@ -5,11 +5,13 @@ var _ = require("lodash"),
     nconf = require("nconf"),
     accountSid = nconf.get("SID"),
     authToken = nconf.get("SToken"),
-    myNumber = nconf.get("MyNumber");
+    myNumber = nconf.get("MyNumber"),
+    CallLog = require("../models/CallLog");
 
 module.exports = function(app) {
     app.post('/call', function(req, res) {
         var client = require('twilio')(accountSid, authToken);
+
         client.calls.create({
             to: req.body.number,
             from: myNumber,
@@ -19,6 +21,13 @@ module.exports = function(app) {
             record: "false",
             url: "http://twilio-krakenjs-demo.herokuapp.com/acceptedCall"
         });
+
+        new CallLog({
+            "Name": req.body.name || "",
+            "Number": req.body.number || "",
+            "CallTime": (new Date).getTime()
+        }).insert();
+
         res.send(200);
     });
 
