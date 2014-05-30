@@ -164,6 +164,8 @@
                             }
                         })
                     });
+                    $("#freeSpeedDialSlots").select2('data', null);
+                    $("#freeSpeedDialSlots").select2('val', "");
                 }
             },
             FreeSpeedDialContactsOptions = {
@@ -192,6 +194,8 @@
                                 });
                         })
                     });
+                    $("#freeSpeedDialContacts").select2('data', null);
+                    $("#freeSpeedDialContacts").select2('val', "");
                 }
             },
             SpeedDialContactsOptions = {
@@ -230,6 +234,8 @@
                             });
                         })()
                     });
+                    $("#speedDialContacts").select2('data', null);
+                    $("#speedDialContacts").select2('val', "");
                 }
             };
 
@@ -248,6 +254,7 @@
             });
 
             reloadCallLogsTable();
+            clearFields();
         });
 
         function reloadCallLogsTable() {
@@ -259,6 +266,23 @@
                         currentLog.Number + "</td><td>" + new Date(currentLog.CallTime) + "</td></tr>");
                 });
             });
+        }
+
+        function clearFields() {
+            $("#callKey").select2('data', null);
+            $("#callKey").select2('val', "");
+
+            $("#freeSpeedDialSlots").select2('data', null);
+            $("#freeSpeedDialSlots").select2('val', "");
+
+            $("#freeSpeedDialContacts").select2('data', null);
+            $("#freeSpeedDialContacts").select2('val', "");
+
+            $("#speedDialContacts").select2('data', null);
+            $("#speedDialContacts").select2('val', "");
+
+            $("#contactsSearch").select2('data', null);
+            $("#contactsSearch").select2('val', "");
         }
     </script>
 </head>

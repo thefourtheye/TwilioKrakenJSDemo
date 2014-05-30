@@ -29,6 +29,7 @@
                     $("#speedDialContacts").select2('data', null);
                     $("#speedDialContacts").select2('val', "");
                 });
+                clearFields();
             }
 
             function callButtonClicked(obj) {
@@ -99,6 +100,7 @@
                     $("#callKey").select2('data', null);
                     $("#callKey").select2('val', "");
                 }
+                clearFields();
             }
         </script>
         <input type="hidden" name="_csrf" id="_csrf" value="{_csrf}" />
@@ -162,6 +164,7 @@
                 $('.modal').modal('hide');
                 $('#deleteContactConfirmModal').modal('show');
             }
+            clearFields();
         }
 
         function editSelectedContact() {
@@ -181,12 +184,10 @@
                 $('.modal').modal('hide');
                 $('#editContactModal').modal('show');
             }
+            clearFields();
         }
 
         function addNewContact() {
-            $("#contactsSearch").select2('data', null);
-            $("#contactsSearch").select2('val', "");
-
             $("#editContactName").val("");
             $("#editContactCCode").val("");
             $("#editContactPhoneNumber").val("");
@@ -194,6 +195,8 @@
             $('#EditModalTitle').text("Create new Contact");
             $('.modal').modal('hide');
             $('#editContactModal').modal('show');
+
+            clearFields();
         }
     </script>
     <form method="post">
@@ -245,6 +248,8 @@
                         $("#contactsSearch").select2(ContactsBoxOptions);
                     });
                     $('#deleteContactConfirmModal').modal('hide');
+
+                    clearFields();
                 }
             </script>
             <div class="modal-dialog">
@@ -312,6 +317,8 @@
                         });
                     }
                     $('#editContactModal').modal('hide');
+
+                    clearFields();
                 }
             </script>
             <div class="modal-dialog">
@@ -404,6 +411,8 @@
                     $("#freeSpeedDialSlots").select2(FreeSpeedDialSlotsOptions);
                     $("#freeSpeedDialContacts").select2(FreeSpeedDialContactsOptions);
                 });
+
+                clearFields();
             }
         }
     </script>
@@ -424,9 +433,6 @@
                         <input id="freeSpeedDialContacts" name="freeSpeedDialContacts"
                             style="width:100%" type="hidden" class="ptserif" required />
                     </td>
-                </tr>
-                <tr>
-                    <td></td>
                 </tr>
                 <tr>
                     <td colspan="2" align="center">
@@ -482,34 +488,6 @@
 
 
 {<callLogsBody}
-    <script>
-        function addNewSpeedDial() {
-            var speedDialID = $("#freeSpeedDialSlots").val(),
-                contactID = $("#freeSpeedDialContacts").val();
-            if (!speedDialID || !contactID) {
-                alert("Please select both free slot and contact to assign.");
-            } else {
-                $.ajax("/speeddial", {
-                    "type": "POST",
-                    "data": {
-                        "_csrf": $("#_csrf").val(),
-                        "type": "insert",
-                        "ID": speedDialID,
-                        "ContactID": contactID
-                    },
-                    "error": function() {
-                        alert("Speed dial assignment failed!");
-                    }
-                }).done(function(data) {
-                    alert("Speed dial assignment Success!");
-                    Cache.reloadCache("SpeedDial");
-                    $("#callKey").select2(CallBoxOptions);
-                    $("#freeSpeedDialSlots").select2(FreeSpeedDialSlotsOptions);
-                    $("#freeSpeedDialContacts").select2(FreeSpeedDialContactsOptions);
-                });
-            }
-        }
-    </script>
     <div>
         <table class="table table-bordered" id="callLogsTable">
             <thead>
