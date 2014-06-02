@@ -5,7 +5,8 @@
 var app = require('../index'),
     kraken = require('kraken-js'),
     request = require('supertest'),
-    assert = require('assert');
+    assert = require('assert'),
+    nconf = require('nconf');
 
 describe('Functional Tests for Calling', function() {
 
@@ -33,6 +34,13 @@ describe('Functional Tests for Calling', function() {
     });
 
     it('calling a number with Twilio', function(done) {
+
+        nconf.defaults({
+            'SID': 'dummySID',
+            'MyNumber': 'dummyMyNumber',
+            'SToken': 'dummyToken'
+        });
+
         request(mock)
             .post('/call')
             .send({

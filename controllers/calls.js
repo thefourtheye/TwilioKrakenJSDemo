@@ -4,15 +4,16 @@ var _ = require("lodash"),
     CommonError = require("../lib/util/commonerror"),
     logger = require("../lib/util/logger"),
     nconf = require("nconf"),
-    accountSid = nconf.get("SID") || "dummySID",
-    authToken = nconf.get("SToken") || "dummyToken",
-    myNumber = nconf.get("MyNumber") || "dummyNumber",
     CallLog = require("../models/CallLog");
 
 module.exports = function(app) {
     app.post("/call", function(req, res) {
         try {
-            var client = require("twilio")(accountSid, authToken);
+            var accountSid = nconf.get("SID"),
+                authToken = nconf.get("SToken"),
+                myNumber = nconf.get("MyNumber"),
+                client = require("twilio")(accountSid, authToken);
+
             client.calls.create({
                 to: req.body.number,
                 from: myNumber,
