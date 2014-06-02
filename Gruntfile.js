@@ -84,7 +84,7 @@ module.exports = function (grunt) {
             options: {
                 globals: ['chai'],
                 timeout: 6000,
-                ignoreLeaks: false,
+                ignoreLeaks: true,
                 ui: 'bdd',
                 reporter: 'spec'
             }

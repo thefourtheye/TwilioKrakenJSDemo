@@ -32,7 +32,7 @@ module.exports = function(app) {
                 });
         } else {
             logger("ERROR", "Table name is not specified/not valid.");
-            res.send(403);
+            res.send(403, "Table name is not specified/not valid.");
         }
     });
 };

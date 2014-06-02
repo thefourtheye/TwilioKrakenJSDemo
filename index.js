@@ -22,10 +22,11 @@ app.requestStart = function requestStart(server) {
 
 app.requestBeforeRoute = function requestBeforeRoute(server) {
     // Run before any routes have been added.
-    server.use(require('express-session')({
-        "secret": conf.get("SessionSecret")
-    }));
-    server.use(lusca.csrf());
+    if (process.env.NODE_ENV !== "testing") {
+        server.use(require('express-session')({
+            "secret": conf.get("SessionSecret")
+        }));
+    }
     server.use(lusca.xframe('SAMEORIGIN'));
     server.use(lusca.xssProtection(true));
 };

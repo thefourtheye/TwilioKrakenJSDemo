@@ -1,0 +1,15 @@
+{
+  "view engines": {
+     "dust": {
+         "module": "adaro",
+         "settings": {
+             "helpers": null,
+             "stream": false
+         }
+     }
+ },
+ "database": {
+     "name": "sqlite",
+     "fileName": ":memory:"
+ }
+}

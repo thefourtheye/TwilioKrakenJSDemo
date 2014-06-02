@@ -17,16 +17,16 @@ Model.prototype.select = function(columns, exact, sort, callBack) {
     }, callBack);
 };
 
-Model.prototype.insert = function() {
-    db.insert(this.__database, this.__table, this.__data);
+Model.prototype.insert = function(callBack) {
+    db.insert(this.__database, this.__table, this.__data, callBack);
 };
 
-Model.prototype.purge = function() {
-    db.purge(this.__database, this.__table, this.__data);
+Model.prototype.purge = function(callBack) {
+    db.purge(this.__database, this.__table, this.__data, callBack);
 };
 
-Model.prototype.update = function(criteria) {
-    db.update(this.__database, this.__table, this.__data, criteria);
+Model.prototype.update = function(criteria, callBack) {
+    db.update(this.__database, this.__table, this.__data, criteria, callBack);
 };
 
 Model.prototype.query = db.query;
