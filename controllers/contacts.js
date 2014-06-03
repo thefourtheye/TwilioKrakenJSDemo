@@ -36,7 +36,7 @@ module.exports = function(app) {
         function callBack(err, result) {
             if (err) {
                 logger("ERROR", err.message);
-                return res.send(403, err.message);
+                return res.send(403, "Server was unable to process the request at this time");
             } else {
                 return res.send(200, result);
             }
@@ -60,8 +60,8 @@ module.exports = function(app) {
                     res.send(403, "Invalid Contact operation");
                 }
             } else {
-                logger("ERROR", "Contact operation not found");
-                res.send(403, "Contact operation not found");
+                logger("ERROR", "Contact operation not found in the request");
+                res.send(403, "Contact operation not found in the request");
             }
         } catch (exception) {
             logger("ERROR", exception.message);

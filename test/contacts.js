@@ -200,7 +200,7 @@ describe('Functional Tests for Contacts', function() {
             .post('/contacts')
             .send({})
             .expect(403)
-            .expect("Contact operation not found")
+            .expect("Contact operation not found in the request")
             .end(done);
     });
 

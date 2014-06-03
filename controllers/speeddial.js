@@ -7,20 +7,32 @@ var _ = require("lodash"),
 
 module.exports = function(app) {
     app.post("/speeddial", function(req, res) {
-        if (_.has(req.body, "type")) {
+
+        function callBack(err, result) {
+            if (err) {
+                logger("ERROR", err.message);
+                return res.send(403, "Server was unable to process the request at this time");
+            } else {
+                return res.send(200);
+            }
+        }
+        if (_.isString(req.body.type) && req.body.type) {
             if (req.body.type === "insert") {
                 new SpeedDial({
                     ID: req.body.ID,
                     ContactID: req.body.ContactID
-                }).insert();
+                }).insert(callBack);
             } else if (req.body.type === "delete") {
                 new SpeedDial({
                     ID: req.body.ID
-                }).purge();
+                }).purge(callBack);
+            } else {
+                logger("ERROR", "Invalid SpeedDial operation");
+                res.send(403, "Invalid SpeedDial operation");
             }
-            res.send(200);
         } else {
-            res.send(403);
+            logger("ERROR", "SpeedDial operation not found in the request");
+            res.send(403, "SpeedDial operation not found in the request");
         }
     });
 };
