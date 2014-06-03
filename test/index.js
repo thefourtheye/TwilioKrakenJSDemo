@@ -85,4 +85,13 @@ describe('Functional Tests for Calling', function() {
             .expect("Table name is not specified/not valid.")
             .end(done);
     });
+
+    it('Loading an invalid page', function(done) {
+        request(mock)
+            .post('/zombiepage')
+            .send()
+            .expect(404)
+            .end(done);
+    });
+
 });

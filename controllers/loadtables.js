@@ -12,7 +12,9 @@ var _ = require("lodash"),
         Contacts: {
             "Name": "ASC"
         },
-        SpeedDial: null,
+        SpeedDial: {
+            "ID": "ASC"
+        },
         CallLogs: {
             "CallTime": "DESC"
         }
@@ -25,9 +27,10 @@ module.exports = function(app) {
             new Tables[table]()
                 .select("*", false, DefaultSortObjects[table], function(err, rows) {
                     if (err) {
-                        throw new CommonError(err);
+                        logger("ERROR", err.message);
+                        res.send(403, "Server was unable to process the request at this time");
                     } else {
-                        res.send(rows);
+                        res.send(200, rows);
                     }
                 });
         } else {
